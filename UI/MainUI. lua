@@ -1,0 +1,527 @@
+-- MainUI.lua
+-- Framework visual puro para Roblox/Luau
+
+local PrivateUI = {}
+
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+
+local Player = Players.LocalPlayer
+
+PrivateUI.Themes = {
+	-- LIGHT
+	LightBlue = {
+		Background = Color3.fromRGB(245, 248, 255),
+		Panel = Color3.fromRGB(255, 255, 255),
+		Element = Color3.fromRGB(235, 242, 255),
+		Accent = Color3.fromRGB(60, 130, 255),
+		Text = Color3.fromRGB(25, 25, 35),
+		MutedText = Color3.fromRGB(100, 105, 120),
+		Stroke = Color3.fromRGB(210, 220, 240),
+	},
+
+	LightPurple = {
+		Background = Color3.fromRGB(250, 245, 255),
+		Panel = Color3.fromRGB(255, 255, 255),
+		Element = Color3.fromRGB(242, 232, 255),
+		Accent = Color3.fromRGB(150, 90, 255),
+		Text = Color3.fromRGB(30, 25, 40),
+		MutedText = Color3.fromRGB(110, 100, 125),
+		Stroke = Color3.fromRGB(225, 210, 245),
+	},
+
+	LightGreen = {
+		Background = Color3.fromRGB(245, 255, 248),
+		Panel = Color3.fromRGB(255, 255, 255),
+		Element = Color3.fromRGB(230, 250, 238),
+		Accent = Color3.fromRGB(0, 180, 110),
+		Text = Color3.fromRGB(20, 35, 28),
+		MutedText = Color3.fromRGB(90, 120, 105),
+		Stroke = Color3.fromRGB(205, 235, 220),
+	},
+
+	LightRed = {
+		Background = Color3.fromRGB(255, 246, 246),
+		Panel = Color3.fromRGB(255, 255, 255),
+		Element = Color3.fromRGB(255, 232, 232),
+		Accent = Color3.fromRGB(230, 70, 80),
+		Text = Color3.fromRGB(40, 25, 25),
+		MutedText = Color3.fromRGB(125, 100, 100),
+		Stroke = Color3.fromRGB(240, 210, 210),
+	},
+
+	LightYellow = {
+		Background = Color3.fromRGB(255, 253, 240),
+		Panel = Color3.fromRGB(255, 255, 255),
+		Element = Color3.fromRGB(255, 246, 210),
+		Accent = Color3.fromRGB(230, 170, 0),
+		Text = Color3.fromRGB(40, 35, 20),
+		MutedText = Color3.fromRGB(125, 115, 80),
+		Stroke = Color3.fromRGB(240, 225, 180),
+	},
+
+	-- DARK
+	DarkBlue = {
+		Background = Color3.fromRGB(10, 12, 20),
+		Panel = Color3.fromRGB(18, 22, 34),
+		Element = Color3.fromRGB(28, 34, 52),
+		Accent = Color3.fromRGB(70, 140, 255),
+		Text = Color3.fromRGB(245, 248, 255),
+		MutedText = Color3.fromRGB(145, 155, 175),
+		Stroke = Color3.fromRGB(45, 55, 78),
+	},
+
+	DarkPurple = {
+		Background = Color3.fromRGB(14, 10, 22),
+		Panel = Color3.fromRGB(24, 18, 36),
+		Element = Color3.fromRGB(38, 28, 58),
+		Accent = Color3.fromRGB(170, 95, 255),
+		Text = Color3.fromRGB(250, 245, 255),
+		MutedText = Color3.fromRGB(165, 145, 185),
+		Stroke = Color3.fromRGB(60, 45, 82),
+	},
+
+	DarkGreen = {
+		Background = Color3.fromRGB(8, 18, 14),
+		Panel = Color3.fromRGB(14, 28, 22),
+		Element = Color3.fromRGB(22, 44, 34),
+		Accent = Color3.fromRGB(0, 255, 170),
+		Text = Color3.fromRGB(240, 255, 248),
+		MutedText = Color3.fromRGB(135, 175, 155),
+		Stroke = Color3.fromRGB(35, 70, 55),
+	},
+
+	DarkRed = {
+		Background = Color3.fromRGB(22, 9, 11),
+		Panel = Color3.fromRGB(34, 15, 18),
+		Element = Color3.fromRGB(54, 25, 28),
+		Accent = Color3.fromRGB(255, 80, 95),
+		Text = Color3.fromRGB(255, 245, 245),
+		MutedText = Color3.fromRGB(180, 135, 140),
+		Stroke = Color3.fromRGB(80, 40, 45),
+	},
+
+	DarkYellow = {
+		Background = Color3.fromRGB(20, 17, 8),
+		Panel = Color3.fromRGB(32, 27, 14),
+		Element = Color3.fromRGB(50, 42, 20),
+		Accent = Color3.fromRGB(255, 190, 40),
+		Text = Color3.fromRGB(255, 250, 235),
+		MutedText = Color3.fromRGB(180, 165, 120),
+		Stroke = Color3.fromRGB(75, 65, 35),
+	},
+
+	-- AMOLED
+	AmoledGreen = {
+		Background = Color3.fromRGB(0, 0, 0),
+		Panel = Color3.fromRGB(8, 8, 10),
+		Element = Color3.fromRGB(16, 16, 20),
+		Accent = Color3.fromRGB(0, 255, 170),
+		Text = Color3.fromRGB(255, 255, 255),
+		MutedText = Color3.fromRGB(150, 150, 160),
+		Stroke = Color3.fromRGB(35, 35, 42),
+	},
+
+	AmoledPurple = {
+		Background = Color3.fromRGB(0, 0, 0),
+		Panel = Color3.fromRGB(9, 7, 12),
+		Element = Color3.fromRGB(18, 14, 24),
+		Accent = Color3.fromRGB(180, 80, 255),
+		Text = Color3.fromRGB(255, 255, 255),
+		MutedText = Color3.fromRGB(155, 145, 165),
+		Stroke = Color3.fromRGB(38, 32, 48),
+	},
+}
+
+local function corner(parent, radius)
+	local c = Instance.new("UICorner")
+	c.CornerRadius = UDim.new(0, radius or 10)
+	c.Parent = parent
+	return c
+end
+
+local function stroke(parent, color)
+	local s = Instance.new("UIStroke")
+	s.Color = color
+	s.Thickness = 1
+	s.Transparency = 0.25
+	s.Parent = parent
+	return s
+end
+
+local function tween(obj, props, time)
+	TweenService:Create(
+		obj,
+		TweenInfo.new(time or 0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+		props
+	):Play()
+end
+
+local function makeDraggable(frame, handle)
+	local dragging = false
+	local dragStart
+	local startPos
+
+	handle.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = frame.Position
+		end
+	end)
+
+	UserInputService.InputEnded:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = false
+		end
+	end)
+
+	UserInputService.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+
+function PrivateUI.new(config)
+	config = config or {}
+
+	local self = setmetatable({}, { __index = PrivateUI })
+
+	self.Title = config.Title or "PrivateUI"
+	self.ThemeName = config.Theme or "AmoledGreen"
+	self.Theme = PrivateUI.Themes[self.ThemeName] or PrivateUI.Themes.AmoledGreen
+	self.ToggleKey = config.ToggleKey or Enum.KeyCode.RightShift
+	self.Visible = true
+	self.IsMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+
+	if config.Colors then
+		for key, value in pairs(config.Colors) do
+			self.Theme[key] = value
+		end
+	end
+
+	self.Gui = Instance.new("ScreenGui")
+	self.Gui.Name = "PrivateUI"
+	self.Gui.ResetOnSpawn = false
+	self.Gui.IgnoreGuiInset = true
+	self.Gui.Parent = Player:WaitForChild("PlayerGui")
+
+	self.Root = Instance.new("Frame")
+	self.Root.Size = UDim2.new(0, 580, 0, 370)
+	self.Root.Position = UDim2.new(0.5, -290, 0.5, -185)
+	self.Root.BackgroundColor3 = self.Theme.Background
+	self.Root.BackgroundTransparency = 0.02
+	self.Root.Parent = self.Gui
+	corner(self.Root, 14)
+	stroke(self.Root, self.Theme.Stroke)
+
+	self.Topbar = Instance.new("Frame")
+	self.Topbar.Size = UDim2.new(1, 0, 0, 44)
+	self.Topbar.BackgroundColor3 = self.Theme.Panel
+	self.Topbar.Parent = self.Root
+	corner(self.Topbar, 14)
+
+	self.TitleLabel = Instance.new("TextLabel")
+	self.TitleLabel.Size = UDim2.new(1, -110, 1, 0)
+	self.TitleLabel.Position = UDim2.new(0, 16, 0, 0)
+	self.TitleLabel.BackgroundTransparency = 1
+	self.TitleLabel.Text = self.Title
+	self.TitleLabel.TextColor3 = self.Theme.Text
+	self.TitleLabel.TextSize = 16
+	self.TitleLabel.Font = Enum.Font.GothamBold
+	self.TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+	self.TitleLabel.Parent = self.Topbar
+
+	self.CloseButton = Instance.new("TextButton")
+	self.CloseButton.Size = UDim2.new(0, 36, 0, 28)
+	self.CloseButton.Position = UDim2.new(1, -44, 0.5, -14)
+	self.CloseButton.BackgroundColor3 = self.Theme.Element
+	self.CloseButton.Text = "X"
+	self.CloseButton.TextColor3 = self.Theme.Text
+	self.CloseButton.TextSize = 14
+	self.CloseButton.Font = Enum.Font.GothamBold
+	self.CloseButton.Parent = self.Topbar
+	corner(self.CloseButton, 8)
+
+	self.Sidebar = Instance.new("Frame")
+	self.Sidebar.Size = UDim2.new(0, 140, 1, -54)
+	self.Sidebar.Position = UDim2.new(0, 10, 0, 50)
+	self.Sidebar.BackgroundColor3 = self.Theme.Panel
+	self.Sidebar.Parent = self.Root
+	corner(self.Sidebar, 12)
+
+	local sidebarList = Instance.new("UIListLayout")
+	sidebarList.Padding = UDim.new(0, 8)
+	sidebarList.SortOrder = Enum.SortOrder.LayoutOrder
+	sidebarList.Parent = self.Sidebar
+
+	local sidebarPad = Instance.new("UIPadding")
+	sidebarPad.PaddingTop = UDim.new(0, 10)
+	sidebarPad.PaddingLeft = UDim.new(0, 8)
+	sidebarPad.PaddingRight = UDim.new(0, 8)
+	sidebarPad.Parent = self.Sidebar
+
+	self.Content = Instance.new("Frame")
+	self.Content.Size = UDim2.new(1, -170, 1, -54)
+	self.Content.Position = UDim2.new(0, 160, 0, 50)
+	self.Content.BackgroundColor3 = self.Theme.Panel
+	self.Content.Parent = self.Root
+	corner(self.Content, 12)
+
+	self.Tabs = {}
+	self.CurrentTab = nil
+
+	makeDraggable(self.Root, self.Topbar)
+
+	self.CloseButton.MouseButton1Click:Connect(function()
+		self:Toggle()
+	end)
+
+	UserInputService.InputBegan:Connect(function(input, gp)
+		if gp then return end
+		if input.KeyCode == self.ToggleKey then
+			self:Toggle()
+		end
+	end)
+
+	if self.IsMobile then
+		self:CreateMobileButton()
+	end
+
+	return self
+end
+
+function PrivateUI:CreateMobileButton()
+	self.Float = Instance.new("TextButton")
+	self.Float.Size = UDim2.new(0, 54, 0, 54)
+	self.Float.Position = UDim2.new(1, -70, 0.5, -27)
+	self.Float.BackgroundColor3 = self.Theme.Accent
+	self.Float.Text = "≡"
+	self.Float.TextColor3 = Color3.fromRGB(255, 255, 255)
+	self.Float.TextSize = 28
+	self.Float.Font = Enum.Font.GothamBold
+	self.Float.Parent = self.Gui
+	corner(self.Float, 100)
+
+	makeDraggable(self.Float, self.Float)
+
+	self.Float.MouseButton1Click:Connect(function()
+		self:Toggle()
+	end)
+end
+
+function PrivateUI:Toggle()
+	self.Visible = not self.Visible
+	self.Root.Visible = self.Visible
+end
+
+function PrivateUI:SetVisible(value)
+	self.Visible = value
+	self.Root.Visible = value
+end
+
+function PrivateUI:CreateTab(name)
+	local tab = {}
+	tab.UI = self
+	tab.Name = name
+
+	local button = Instance.new("TextButton")
+	button.Size = UDim2.new(1, 0, 0, 36)
+	button.BackgroundColor3 = self.Theme.Element
+	button.Text = name
+	button.TextColor3 = self.Theme.Text
+	button.TextSize = 14
+	button.Font = Enum.Font.GothamMedium
+	button.Parent = self.Sidebar
+	corner(button, 9)
+
+	local page = Instance.new("ScrollingFrame")
+	page.Size = UDim2.new(1, 0, 1, 0)
+	page.BackgroundTransparency = 1
+	page.ScrollBarThickness = 4
+	page.Visible = false
+	page.Parent = self.Content
+
+	local layout = Instance.new("UIListLayout")
+	layout.Padding = UDim.new(0, 10)
+	layout.SortOrder = Enum.SortOrder.LayoutOrder
+	layout.Parent = page
+
+	local pad = Instance.new("UIPadding")
+	pad.PaddingTop = UDim.new(0, 12)
+	pad.PaddingLeft = UDim.new(0, 12)
+	pad.PaddingRight = UDim.new(0, 12)
+	pad.PaddingBottom = UDim.new(0, 12)
+	pad.Parent = page
+
+	function tab:Show()
+		for _, t in pairs(self.UI.Tabs) do
+			t.Page.Visible = false
+			t.Button.BackgroundColor3 = self.UI.Theme.Element
+		end
+
+		page.Visible = true
+		button.BackgroundColor3 = self.UI.Theme.Accent
+		self.UI.CurrentTab = tab
+	end
+
+	function tab:CreateSection(title)
+		local label = Instance.new("TextLabel")
+		label.Size = UDim2.new(1, 0, 0, 28)
+		label.BackgroundTransparency = 1
+		label.Text = title
+		label.TextColor3 = self.UI.Theme.MutedText
+		label.TextSize = 13
+		label.Font = Enum.Font.GothamBold
+		label.TextXAlignment = Enum.TextXAlignment.Left
+		label.Parent = page
+		return label
+	end
+
+	function tab:CreateButton(text, callback)
+		local btn = Instance.new("TextButton")
+		btn.Size = UDim2.new(1, 0, 0, 40)
+		btn.BackgroundColor3 = self.UI.Theme.Element
+		btn.Text = text
+		btn.TextColor3 = self.UI.Theme.Text
+		btn.TextSize = 14
+		btn.Font = Enum.Font.Gotham
+		btn.Parent = page
+		corner(btn, 9)
+		stroke(btn, self.UI.Theme.Stroke)
+
+		btn.MouseButton1Click:Connect(function()
+			if callback then callback() end
+		end)
+
+		return btn
+	end
+
+	function tab:CreateToggle(text, default, callback)
+		local state = default or false
+
+		local btn = self:CreateButton(text .. ": " .. tostring(state), function()
+			state = not state
+			btn.Text = text .. ": " .. tostring(state)
+
+			if state then
+				btn.BackgroundColor3 = self.UI.Theme.Accent
+			else
+				btn.BackgroundColor3 = self.UI.Theme.Element
+			end
+
+			if callback then callback(state) end
+		end)
+
+		return btn
+	end
+
+	function tab:CreateSlider(text, min, max, default, callback)
+		local value = default or min
+
+		local btn = self:CreateButton(text .. ": " .. tostring(value), function()
+			value += 1
+			if value > max then
+				value = min
+			end
+
+			btn.Text = text .. ": " .. tostring(value)
+
+			if callback then callback(value) end
+		end)
+
+		return btn
+	end
+
+	function tab:CreateTextBox(text, placeholder, callback)
+		local box = Instance.new("TextBox")
+		box.Size = UDim2.new(1, 0, 0, 40)
+		box.BackgroundColor3 = self.UI.Theme.Element
+		box.PlaceholderText = placeholder or text
+		box.Text = ""
+		box.TextColor3 = self.UI.Theme.Text
+		box.PlaceholderColor3 = self.UI.Theme.MutedText
+		box.TextSize = 14
+		box.Font = Enum.Font.Gotham
+		box.Parent = page
+		corner(box, 9)
+		stroke(box, self.UI.Theme.Stroke)
+
+		box.FocusLost:Connect(function()
+			if callback then callback(box.Text) end
+		end)
+
+		return box
+	end
+
+	button.MouseButton1Click:Connect(function()
+		tab:Show()
+	end)
+
+	tab.Button = button
+	tab.Page = page
+
+	table.insert(self.Tabs, tab)
+
+	if not self.CurrentTab then
+		tab:Show()
+	end
+
+	return tab
+end
+
+function PrivateUI:SetTheme(themeName)
+	local theme = PrivateUI.Themes[themeName]
+	if not theme then return end
+
+	self.ThemeName = themeName
+	self.Theme = theme
+
+	self.Root.BackgroundColor3 = theme.Background
+	self.Topbar.BackgroundColor3 = theme.Panel
+	self.Sidebar.BackgroundColor3 = theme.Panel
+	self.Content.BackgroundColor3 = theme.Panel
+	self.TitleLabel.TextColor3 = theme.Text
+	self.CloseButton.BackgroundColor3 = theme.Element
+	self.CloseButton.TextColor3 = theme.Text
+
+	if self.Float then
+		self.Float.BackgroundColor3 = theme.Accent
+	end
+end
+
+function PrivateUI:Notify(text)
+	local note = Instance.new("TextLabel")
+	note.Size = UDim2.new(0, 280, 0, 42)
+	note.Position = UDim2.new(1, -300, 1, -70)
+	note.BackgroundColor3 = self.Theme.Panel
+	note.Text = text
+	note.TextColor3 = self.Theme.Text
+	note.TextSize = 14
+	note.Font = Enum.Font.Gotham
+	note.Parent = self.Gui
+	corner(note, 10)
+	stroke(note, self.Theme.Stroke)
+
+	task.delay(2.5, function()
+		if note then
+			note:Destroy()
+		end
+	end)
+end
+
+function PrivateUI:Destroy()
+	if self.Gui then
+		self.Gui:Destroy()
+	end
+end
+
+return PrivateUI
