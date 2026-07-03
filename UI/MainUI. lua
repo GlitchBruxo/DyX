@@ -1,293 +1,233 @@
--- MainUI.lua
--- Framework visual puro para Roblox/Luau
+-- DyX MainUI.lua v2
 
-local PrivateUI = {}
+local DyX = {}
+DyX.Version = "v2.0.0"
 
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
+local HttpService = game:GetService("HttpService")
 
 local Player = Players.LocalPlayer
 
-PrivateUI.Themes = {
-	-- LIGHT
-	LightBlue = {
-		Background = Color3.fromRGB(245, 248, 255),
-		Panel = Color3.fromRGB(255, 255, 255),
-		Element = Color3.fromRGB(235, 242, 255),
-		Accent = Color3.fromRGB(60, 130, 255),
-		Text = Color3.fromRGB(25, 25, 35),
-		MutedText = Color3.fromRGB(100, 105, 120),
-		Stroke = Color3.fromRGB(210, 220, 240),
-	},
+DyX.Themes = {
+	AmoledGreen = {Bg=Color3.fromRGB(0,0,0), Panel=Color3.fromRGB(8,8,10), Element=Color3.fromRGB(18,18,22), Accent=Color3.fromRGB(0,255,170), Text=Color3.fromRGB(255,255,255), Muted=Color3.fromRGB(150,150,160), Stroke=Color3.fromRGB(35,35,42)},
+	AmoledPurple = {Bg=Color3.fromRGB(0,0,0), Panel=Color3.fromRGB(10,7,14), Element=Color3.fromRGB(22,16,30), Accent=Color3.fromRGB(180,80,255), Text=Color3.fromRGB(255,255,255), Muted=Color3.fromRGB(160,145,170), Stroke=Color3.fromRGB(42,32,55)},
 
-	LightPurple = {
-		Background = Color3.fromRGB(250, 245, 255),
-		Panel = Color3.fromRGB(255, 255, 255),
-		Element = Color3.fromRGB(242, 232, 255),
-		Accent = Color3.fromRGB(150, 90, 255),
-		Text = Color3.fromRGB(30, 25, 40),
-		MutedText = Color3.fromRGB(110, 100, 125),
-		Stroke = Color3.fromRGB(225, 210, 245),
-	},
+	DarkBlue = {Bg=Color3.fromRGB(10,12,20), Panel=Color3.fromRGB(18,22,34), Element=Color3.fromRGB(28,34,52), Accent=Color3.fromRGB(70,140,255), Text=Color3.fromRGB(245,248,255), Muted=Color3.fromRGB(145,155,175), Stroke=Color3.fromRGB(45,55,78)},
+	DarkPurple = {Bg=Color3.fromRGB(14,10,22), Panel=Color3.fromRGB(24,18,36), Element=Color3.fromRGB(38,28,58), Accent=Color3.fromRGB(170,95,255), Text=Color3.fromRGB(250,245,255), Muted=Color3.fromRGB(165,145,185), Stroke=Color3.fromRGB(60,45,82)},
+	DarkGreen = {Bg=Color3.fromRGB(8,18,14), Panel=Color3.fromRGB(14,28,22), Element=Color3.fromRGB(22,44,34), Accent=Color3.fromRGB(0,255,170), Text=Color3.fromRGB(240,255,248), Muted=Color3.fromRGB(135,175,155), Stroke=Color3.fromRGB(35,70,55)},
+	DarkRed = {Bg=Color3.fromRGB(22,9,11), Panel=Color3.fromRGB(34,15,18), Element=Color3.fromRGB(54,25,28), Accent=Color3.fromRGB(255,80,95), Text=Color3.fromRGB(255,245,245), Muted=Color3.fromRGB(180,135,140), Stroke=Color3.fromRGB(80,40,45)},
+	DarkYellow = {Bg=Color3.fromRGB(20,17,8), Panel=Color3.fromRGB(32,27,14), Element=Color3.fromRGB(50,42,20), Accent=Color3.fromRGB(255,190,40), Text=Color3.fromRGB(255,250,235), Muted=Color3.fromRGB(180,165,120), Stroke=Color3.fromRGB(75,65,35)},
 
-	LightGreen = {
-		Background = Color3.fromRGB(245, 255, 248),
-		Panel = Color3.fromRGB(255, 255, 255),
-		Element = Color3.fromRGB(230, 250, 238),
-		Accent = Color3.fromRGB(0, 180, 110),
-		Text = Color3.fromRGB(20, 35, 28),
-		MutedText = Color3.fromRGB(90, 120, 105),
-		Stroke = Color3.fromRGB(205, 235, 220),
-	},
-
-	LightRed = {
-		Background = Color3.fromRGB(255, 246, 246),
-		Panel = Color3.fromRGB(255, 255, 255),
-		Element = Color3.fromRGB(255, 232, 232),
-		Accent = Color3.fromRGB(230, 70, 80),
-		Text = Color3.fromRGB(40, 25, 25),
-		MutedText = Color3.fromRGB(125, 100, 100),
-		Stroke = Color3.fromRGB(240, 210, 210),
-	},
-
-	LightYellow = {
-		Background = Color3.fromRGB(255, 253, 240),
-		Panel = Color3.fromRGB(255, 255, 255),
-		Element = Color3.fromRGB(255, 246, 210),
-		Accent = Color3.fromRGB(230, 170, 0),
-		Text = Color3.fromRGB(40, 35, 20),
-		MutedText = Color3.fromRGB(125, 115, 80),
-		Stroke = Color3.fromRGB(240, 225, 180),
-	},
-
-	-- DARK
-	DarkBlue = {
-		Background = Color3.fromRGB(10, 12, 20),
-		Panel = Color3.fromRGB(18, 22, 34),
-		Element = Color3.fromRGB(28, 34, 52),
-		Accent = Color3.fromRGB(70, 140, 255),
-		Text = Color3.fromRGB(245, 248, 255),
-		MutedText = Color3.fromRGB(145, 155, 175),
-		Stroke = Color3.fromRGB(45, 55, 78),
-	},
-
-	DarkPurple = {
-		Background = Color3.fromRGB(14, 10, 22),
-		Panel = Color3.fromRGB(24, 18, 36),
-		Element = Color3.fromRGB(38, 28, 58),
-		Accent = Color3.fromRGB(170, 95, 255),
-		Text = Color3.fromRGB(250, 245, 255),
-		MutedText = Color3.fromRGB(165, 145, 185),
-		Stroke = Color3.fromRGB(60, 45, 82),
-	},
-
-	DarkGreen = {
-		Background = Color3.fromRGB(8, 18, 14),
-		Panel = Color3.fromRGB(14, 28, 22),
-		Element = Color3.fromRGB(22, 44, 34),
-		Accent = Color3.fromRGB(0, 255, 170),
-		Text = Color3.fromRGB(240, 255, 248),
-		MutedText = Color3.fromRGB(135, 175, 155),
-		Stroke = Color3.fromRGB(35, 70, 55),
-	},
-
-	DarkRed = {
-		Background = Color3.fromRGB(22, 9, 11),
-		Panel = Color3.fromRGB(34, 15, 18),
-		Element = Color3.fromRGB(54, 25, 28),
-		Accent = Color3.fromRGB(255, 80, 95),
-		Text = Color3.fromRGB(255, 245, 245),
-		MutedText = Color3.fromRGB(180, 135, 140),
-		Stroke = Color3.fromRGB(80, 40, 45),
-	},
-
-	DarkYellow = {
-		Background = Color3.fromRGB(20, 17, 8),
-		Panel = Color3.fromRGB(32, 27, 14),
-		Element = Color3.fromRGB(50, 42, 20),
-		Accent = Color3.fromRGB(255, 190, 40),
-		Text = Color3.fromRGB(255, 250, 235),
-		MutedText = Color3.fromRGB(180, 165, 120),
-		Stroke = Color3.fromRGB(75, 65, 35),
-	},
-
-	-- AMOLED
-	AmoledGreen = {
-		Background = Color3.fromRGB(0, 0, 0),
-		Panel = Color3.fromRGB(8, 8, 10),
-		Element = Color3.fromRGB(16, 16, 20),
-		Accent = Color3.fromRGB(0, 255, 170),
-		Text = Color3.fromRGB(255, 255, 255),
-		MutedText = Color3.fromRGB(150, 150, 160),
-		Stroke = Color3.fromRGB(35, 35, 42),
-	},
-
-	AmoledPurple = {
-		Background = Color3.fromRGB(0, 0, 0),
-		Panel = Color3.fromRGB(9, 7, 12),
-		Element = Color3.fromRGB(18, 14, 24),
-		Accent = Color3.fromRGB(180, 80, 255),
-		Text = Color3.fromRGB(255, 255, 255),
-		MutedText = Color3.fromRGB(155, 145, 165),
-		Stroke = Color3.fromRGB(38, 32, 48),
-	},
+	LightBlue = {Bg=Color3.fromRGB(245,248,255), Panel=Color3.fromRGB(255,255,255), Element=Color3.fromRGB(235,242,255), Accent=Color3.fromRGB(60,130,255), Text=Color3.fromRGB(25,25,35), Muted=Color3.fromRGB(100,105,120), Stroke=Color3.fromRGB(210,220,240)},
+	LightPurple = {Bg=Color3.fromRGB(250,245,255), Panel=Color3.fromRGB(255,255,255), Element=Color3.fromRGB(242,232,255), Accent=Color3.fromRGB(150,90,255), Text=Color3.fromRGB(30,25,40), Muted=Color3.fromRGB(110,100,125), Stroke=Color3.fromRGB(225,210,245)},
+	LightGreen = {Bg=Color3.fromRGB(245,255,248), Panel=Color3.fromRGB(255,255,255), Element=Color3.fromRGB(230,250,238), Accent=Color3.fromRGB(0,180,110), Text=Color3.fromRGB(20,35,28), Muted=Color3.fromRGB(90,120,105), Stroke=Color3.fromRGB(205,235,220)},
+	LightRed = {Bg=Color3.fromRGB(255,246,246), Panel=Color3.fromRGB(255,255,255), Element=Color3.fromRGB(255,232,232), Accent=Color3.fromRGB(230,70,80), Text=Color3.fromRGB(40,25,25), Muted=Color3.fromRGB(125,100,100), Stroke=Color3.fromRGB(240,210,210)},
+	LightYellow = {Bg=Color3.fromRGB(255,253,240), Panel=Color3.fromRGB(255,255,255), Element=Color3.fromRGB(255,246,210), Accent=Color3.fromRGB(230,170,0), Text=Color3.fromRGB(40,35,20), Muted=Color3.fromRGB(125,115,80), Stroke=Color3.fromRGB(240,225,180)}
 }
 
-local function corner(parent, radius)
+local function corner(obj, r)
 	local c = Instance.new("UICorner")
-	c.CornerRadius = UDim.new(0, radius or 10)
-	c.Parent = parent
-	return c
+	c.CornerRadius = UDim.new(0, r or 10)
+	c.Parent = obj
 end
 
-local function stroke(parent, color)
+local function stroke(obj, color)
 	local s = Instance.new("UIStroke")
 	s.Color = color
 	s.Thickness = 1
-	s.Transparency = 0.25
-	s.Parent = parent
-	return s
+	s.Transparency = 0.35
+	s.Parent = obj
 end
 
-local function tween(obj, props, time)
-	TweenService:Create(
-		obj,
-		TweenInfo.new(time or 0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-		props
-	):Play()
+local function tween(obj, props, t)
+	TweenService:Create(obj, TweenInfo.new(t or 0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
 end
 
-local function makeDraggable(frame, handle)
-	local dragging = false
-	local dragStart
-	local startPos
+local function canFile()
+	return typeof(writefile) == "function" and typeof(readfile) == "function" and typeof(isfile) == "function"
+end
+
+local function drag(frame, handle)
+	local dragging, start, startPos
 
 	handle.InputBegan:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = true
-			dragStart = input.Position
+			start = input.Position
 			startPos = frame.Position
 		end
 	end)
 
-	UserInputService.InputEnded:Connect(function(input)
+	UIS.InputEnded:Connect(function(input)
 		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 			dragging = false
 		end
 	end)
 
-	UserInputService.InputChanged:Connect(function(input)
+	UIS.InputChanged:Connect(function(input)
 		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-			local delta = input.Position - dragStart
-			frame.Position = UDim2.new(
-				startPos.X.Scale,
-				startPos.X.Offset + delta.X,
-				startPos.Y.Scale,
-				startPos.Y.Offset + delta.Y
-			)
+			local delta = input.Position - start
+			frame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
 		end
 	end)
 end
 
-function PrivateUI.new(config)
+function DyX.new(config)
 	config = config or {}
 
-	local self = setmetatable({}, { __index = PrivateUI })
+	local self = setmetatable({}, {__index = DyX})
 
-	self.Title = config.Title or "PrivateUI"
-	self.ThemeName = config.Theme or "AmoledGreen"
-	self.Theme = PrivateUI.Themes[self.ThemeName] or PrivateUI.Themes.AmoledGreen
+	self.Title = config.Title or "DyX Hub"
+	self.KeyTier = config.KeyTier or "Free"
 	self.ToggleKey = config.ToggleKey or Enum.KeyCode.RightShift
-	self.Visible = true
-	self.IsMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	self.ConfigFile = config.ConfigFile or "DyX_Config.json"
+	self.ReloadOnThemeChange = config.ReloadOnThemeChange ~= false
+	self.ReloadCallback = config.ReloadCallback
+	self.ScriptUrl = config.ScriptUrl
 
-	if config.Colors then
-		for key, value in pairs(config.Colors) do
-			self.Theme[key] = value
-		end
-	end
+	self.Settings = {
+		Theme = config.Theme or "AmoledGreen",
+		SidebarMode = "IconText",
+		BackgroundOpacity = 0.02,
+		NotifyTime = 5,
+		AutoSave = true,
+		AutoExecute = false,
+		MenuSize = "Normal"
+	}
+
+	self:LoadConfig()
+
+	self.Theme = DyX.Themes[self.Settings.Theme] or DyX.Themes.AmoledGreen
+	self.IsMobile = UIS.TouchEnabled and not UIS.KeyboardEnabled
+	self.Tabs = {}
+	self.Visible = true
 
 	self.Gui = Instance.new("ScreenGui")
-	self.Gui.Name = "PrivateUI"
+	self.Gui.Name = "DyX_UI"
 	self.Gui.ResetOnSpawn = false
 	self.Gui.IgnoreGuiInset = true
 	self.Gui.Parent = Player:WaitForChild("PlayerGui")
 
 	self.Root = Instance.new("Frame")
-	self.Root.Size = UDim2.new(0, 580, 0, 370)
-	self.Root.Position = UDim2.new(0.5, -290, 0.5, -185)
-	self.Root.BackgroundColor3 = self.Theme.Background
-	self.Root.BackgroundTransparency = 0.02
+	self.Root.Size = UDim2.new(0, 640, 0, 410)
+	self.Root.Position = UDim2.new(0.5, -320, 0.5, -205)
+	self.Root.BackgroundColor3 = self.Theme.Bg
+	self.Root.BackgroundTransparency = self.Settings.BackgroundOpacity
 	self.Root.Parent = self.Gui
-	corner(self.Root, 14)
+	corner(self.Root, 16)
 	stroke(self.Root, self.Theme.Stroke)
 
 	self.Topbar = Instance.new("Frame")
-	self.Topbar.Size = UDim2.new(1, 0, 0, 44)
+	self.Topbar.Size = UDim2.new(1, 0, 0, 48)
 	self.Topbar.BackgroundColor3 = self.Theme.Panel
 	self.Topbar.Parent = self.Root
-	corner(self.Topbar, 14)
+	corner(self.Topbar, 16)
 
 	self.TitleLabel = Instance.new("TextLabel")
-	self.TitleLabel.Size = UDim2.new(1, -110, 1, 0)
+	self.TitleLabel.Size = UDim2.new(1, -100, 1, 0)
 	self.TitleLabel.Position = UDim2.new(0, 16, 0, 0)
 	self.TitleLabel.BackgroundTransparency = 1
 	self.TitleLabel.Text = self.Title
 	self.TitleLabel.TextColor3 = self.Theme.Text
-	self.TitleLabel.TextSize = 16
+	self.TitleLabel.TextSize = 17
 	self.TitleLabel.Font = Enum.Font.GothamBold
 	self.TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
 	self.TitleLabel.Parent = self.Topbar
 
-	self.CloseButton = Instance.new("TextButton")
-	self.CloseButton.Size = UDim2.new(0, 36, 0, 28)
-	self.CloseButton.Position = UDim2.new(1, -44, 0.5, -14)
-	self.CloseButton.BackgroundColor3 = self.Theme.Element
-	self.CloseButton.Text = "X"
-	self.CloseButton.TextColor3 = self.Theme.Text
-	self.CloseButton.TextSize = 14
-	self.CloseButton.Font = Enum.Font.GothamBold
-	self.CloseButton.Parent = self.Topbar
-	corner(self.CloseButton, 8)
+	self.Close = Instance.new("TextButton")
+	self.Close.Size = UDim2.new(0, 36, 0, 30)
+	self.Close.Position = UDim2.new(1, -46, 0.5, -15)
+	self.Close.BackgroundColor3 = self.Theme.Element
+	self.Close.Text = "×"
+	self.Close.TextColor3 = self.Theme.Text
+	self.Close.TextSize = 20
+	self.Close.Font = Enum.Font.GothamBold
+	self.Close.Parent = self.Topbar
+	corner(self.Close, 9)
 
 	self.Sidebar = Instance.new("Frame")
-	self.Sidebar.Size = UDim2.new(0, 140, 1, -54)
-	self.Sidebar.Position = UDim2.new(0, 10, 0, 50)
+	self.Sidebar.Size = UDim2.new(0, 160, 1, -60)
+	self.Sidebar.Position = UDim2.new(0, 10, 0, 54)
 	self.Sidebar.BackgroundColor3 = self.Theme.Panel
 	self.Sidebar.Parent = self.Root
-	corner(self.Sidebar, 12)
+	corner(self.Sidebar, 14)
 
-	local sidebarList = Instance.new("UIListLayout")
-	sidebarList.Padding = UDim.new(0, 8)
-	sidebarList.SortOrder = Enum.SortOrder.LayoutOrder
-	sidebarList.Parent = self.Sidebar
+	self.SidebarList = Instance.new("UIListLayout")
+	self.SidebarList.Padding = UDim.new(0, 8)
+	self.SidebarList.Parent = self.Sidebar
 
-	local sidebarPad = Instance.new("UIPadding")
-	sidebarPad.PaddingTop = UDim.new(0, 10)
-	sidebarPad.PaddingLeft = UDim.new(0, 8)
-	sidebarPad.PaddingRight = UDim.new(0, 8)
-	sidebarPad.Parent = self.Sidebar
+	local sidePad = Instance.new("UIPadding")
+	sidePad.PaddingTop = UDim.new(0, 10)
+	sidePad.PaddingLeft = UDim.new(0, 8)
+	sidePad.PaddingRight = UDim.new(0, 8)
+	sidePad.PaddingBottom = UDim.new(0, 96)
+	sidePad.Parent = self.Sidebar
+
+	self.Profile = Instance.new("Frame")
+	self.Profile.Size = UDim2.new(1, -16, 0, 76)
+	self.Profile.Position = UDim2.new(0, 8, 1, -84)
+	self.Profile.BackgroundColor3 = self.Theme.Element
+	self.Profile.Parent = self.Sidebar
+	corner(self.Profile, 12)
+
+	local avatar = Instance.new("ImageLabel")
+	avatar.Size = UDim2.new(0, 38, 0, 38)
+	avatar.Position = UDim2.new(0, 8, 0, 8)
+	avatar.BackgroundTransparency = 1
+	avatar.Image = Players:GetUserThumbnailAsync(Player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+	avatar.Parent = self.Profile
+	corner(avatar, 100)
+
+	local nick = Instance.new("TextLabel")
+	nick.Size = UDim2.new(1, -56, 0, 20)
+	nick.Position = UDim2.new(0, 52, 0, 8)
+	nick.BackgroundTransparency = 1
+	nick.Text = Player.DisplayName
+	nick.TextColor3 = self.Theme.Text
+	nick.TextSize = 12
+	nick.Font = Enum.Font.GothamBold
+	nick.TextXAlignment = Enum.TextXAlignment.Left
+	nick.Parent = self.Profile
+
+	local user = Instance.new("TextLabel")
+	user.Size = UDim2.new(1, -56, 0, 18)
+	user.Position = UDim2.new(0, 52, 0, 28)
+	user.BackgroundTransparency = 1
+	user.Text = "@" .. Player.Name
+	user.TextColor3 = self.Theme.Muted
+	user.TextSize = 11
+	user.Font = Enum.Font.Gotham
+	user.TextXAlignment = Enum.TextXAlignment.Left
+	user.Parent = self.Profile
+
+	self.VersionLabel = Instance.new("TextLabel")
+	self.VersionLabel.Size = UDim2.new(1, -16, 0, 20)
+	self.VersionLabel.Position = UDim2.new(0, 8, 1, -24)
+	self.VersionLabel.BackgroundTransparency = 1
+	self.VersionLabel.Text = self.KeyTier .. " • " .. DyX.Version
+	self.VersionLabel.TextColor3 = self.Theme.Accent
+	self.VersionLabel.TextSize = 11
+	self.VersionLabel.Font = Enum.Font.GothamBold
+	self.VersionLabel.TextXAlignment = Enum.TextXAlignment.Left
+	self.VersionLabel.Parent = self.Profile
 
 	self.Content = Instance.new("Frame")
-	self.Content.Size = UDim2.new(1, -170, 1, -54)
-	self.Content.Position = UDim2.new(0, 160, 0, 50)
+	self.Content.Size = UDim2.new(1, -188, 1, -60)
+	self.Content.Position = UDim2.new(0, 180, 0, 54)
 	self.Content.BackgroundColor3 = self.Theme.Panel
 	self.Content.Parent = self.Root
-	corner(self.Content, 12)
+	corner(self.Content, 14)
 
-	self.Tabs = {}
-	self.CurrentTab = nil
+	drag(self.Root, self.Topbar)
 
-	makeDraggable(self.Root, self.Topbar)
-
-	self.CloseButton.MouseButton1Click:Connect(function()
+	self.Close.MouseButton1Click:Connect(function()
 		self:Toggle()
 	end)
 
-	UserInputService.InputBegan:Connect(function(input, gp)
-		if gp then return end
-		if input.KeyCode == self.ToggleKey then
+	UIS.InputBegan:Connect(function(input, gp)
+		if not gp and input.KeyCode == self.ToggleKey then
 			self:Toggle()
 		end
 	end)
@@ -296,64 +236,139 @@ function PrivateUI.new(config)
 		self:CreateMobileButton()
 	end
 
+	self:CreateConfigTab()
+	self:ApplySidebarMode()
+
 	return self
 end
 
-function PrivateUI:CreateMobileButton()
+function DyX:SaveConfig()
+	if not self.Settings.AutoSave then return end
+	if canFile() then
+		writefile(self.ConfigFile, HttpService:JSONEncode(self.Settings))
+	end
+end
+
+function DyX:LoadConfig()
+	if canFile() and isfile(self.ConfigFile) then
+		local ok, data = pcall(function()
+			return HttpService:JSONDecode(readfile(self.ConfigFile))
+		end)
+		if ok and type(data) == "table" then
+			for k, v in pairs(data) do
+				self.Settings[k] = v
+			end
+		end
+	end
+end
+
+function DyX:Reload()
+	self:Notify("Recarregando interface...", 1.5)
+
+	task.delay(0.4, function()
+		self:Destroy()
+
+		if self.ReloadCallback then
+			self.ReloadCallback()
+		elseif self.ScriptUrl and typeof(loadstring) == "function" and game.HttpGet then
+			loadstring(game:HttpGet(self.ScriptUrl))()
+		end
+	end)
+end
+
+function DyX:CreateMobileButton()
 	self.Float = Instance.new("TextButton")
-	self.Float.Size = UDim2.new(0, 54, 0, 54)
-	self.Float.Position = UDim2.new(1, -70, 0.5, -27)
+	self.Float.Size = UDim2.new(0, 62, 0, 62)
+	self.Float.Position = UDim2.new(1, -78, 0.5, -31)
 	self.Float.BackgroundColor3 = self.Theme.Accent
-	self.Float.Text = "≡"
-	self.Float.TextColor3 = Color3.fromRGB(255, 255, 255)
-	self.Float.TextSize = 28
-	self.Float.Font = Enum.Font.GothamBold
+	self.Float.Text = "DyX"
+	self.Float.TextColor3 = Color3.fromRGB(255,255,255)
+	self.Float.TextSize = 16
+	self.Float.Font = Enum.Font.GothamBlack
 	self.Float.Parent = self.Gui
 	corner(self.Float, 100)
-
-	makeDraggable(self.Float, self.Float)
+	drag(self.Float, self.Float)
 
 	self.Float.MouseButton1Click:Connect(function()
 		self:Toggle()
 	end)
 end
 
-function PrivateUI:Toggle()
+function DyX:Toggle()
 	self.Visible = not self.Visible
 	self.Root.Visible = self.Visible
 end
 
-function PrivateUI:SetVisible(value)
-	self.Visible = value
-	self.Root.Visible = value
+function DyX:SetTheme(name)
+	if not DyX.Themes[name] then return end
+
+	self.Settings.Theme = name
+	self:SaveConfig()
+
+	if self.ReloadOnThemeChange then
+		self:Reload()
+	else
+		self.Theme = DyX.Themes[name]
+	end
 end
 
-function PrivateUI:CreateTab(name)
-	local tab = {}
-	tab.UI = self
-	tab.Name = name
+function DyX:SetOpacity(value)
+	self.Settings.BackgroundOpacity = value
+	self.Root.BackgroundTransparency = value
+	self:SaveConfig()
+end
 
-	local button = Instance.new("TextButton")
-	button.Size = UDim2.new(1, 0, 0, 36)
-	button.BackgroundColor3 = self.Theme.Element
-	button.Text = name
-	button.TextColor3 = self.Theme.Text
-	button.TextSize = 14
-	button.Font = Enum.Font.GothamMedium
-	button.Parent = self.Sidebar
-	corner(button, 9)
+function DyX:ApplySidebarMode()
+	for _, tab in ipairs(self.Tabs) do
+		if self.Settings.SidebarMode == "Icon" then
+			tab.Button.Text = tab.Icon
+			self.Sidebar.Size = UDim2.new(0, 70, 1, -60)
+			self.Content.Position = UDim2.new(0, 90, 0, 54)
+			self.Content.Size = UDim2.new(1, -98, 1, -60)
+		elseif self.Settings.SidebarMode == "Text" then
+			tab.Button.Text = tab.Name
+			self.Sidebar.Size = UDim2.new(0, 150, 1, -60)
+			self.Content.Position = UDim2.new(0, 170, 0, 54)
+			self.Content.Size = UDim2.new(1, -178, 1, -60)
+		else
+			tab.Button.Text = tab.Icon .. "  " .. tab.Name
+			self.Sidebar.Size = UDim2.new(0, 160, 1, -60)
+			self.Content.Position = UDim2.new(0, 180, 0, 54)
+			self.Content.Size = UDim2.new(1, -188, 1, -60)
+		end
+	end
+end
+
+function DyX:CreateTab(name, icon)
+	icon = icon or "•"
+
+	local tab = {UI = self, Name = name, Icon = icon}
+
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1, 0, 0, 38)
+	btn.BackgroundColor3 = self.Theme.Element
+	btn.TextColor3 = self.Theme.Text
+	btn.TextSize = 13
+	btn.Font = Enum.Font.GothamBold
+	btn.Text = icon .. "  " .. name
+	btn.Parent = self.Sidebar
+	corner(btn, 10)
 
 	local page = Instance.new("ScrollingFrame")
 	page.Size = UDim2.new(1, 0, 1, 0)
 	page.BackgroundTransparency = 1
 	page.ScrollBarThickness = 4
 	page.Visible = false
+	page.CanvasSize = UDim2.new(0,0,0,0)
 	page.Parent = self.Content
 
 	local layout = Instance.new("UIListLayout")
 	layout.Padding = UDim.new(0, 10)
-	layout.SortOrder = Enum.SortOrder.LayoutOrder
 	layout.Parent = page
+
+	layout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+		page.CanvasSize = UDim2.new(0, 0, 0, layout.AbsoluteContentSize.Y + 24)
+	end)
 
 	local pad = Instance.new("UIPadding")
 	pad.PaddingTop = UDim.new(0, 12)
@@ -363,96 +378,111 @@ function PrivateUI:CreateTab(name)
 	pad.Parent = page
 
 	function tab:Show()
-		for _, t in pairs(self.UI.Tabs) do
+		for _, t in ipairs(self.UI.Tabs) do
 			t.Page.Visible = false
 			t.Button.BackgroundColor3 = self.UI.Theme.Element
 		end
 
 		page.Visible = true
-		button.BackgroundColor3 = self.UI.Theme.Accent
-		self.UI.CurrentTab = tab
+		btn.BackgroundColor3 = self.UI.Theme.Accent
 	end
 
-	function tab:CreateSection(title)
+	function tab:Section(text)
 		local label = Instance.new("TextLabel")
-		label.Size = UDim2.new(1, 0, 0, 28)
+		label.Size = UDim2.new(1, 0, 0, 26)
 		label.BackgroundTransparency = 1
-		label.Text = title
-		label.TextColor3 = self.UI.Theme.MutedText
+		label.Text = text
+		label.TextColor3 = self.UI.Theme.Muted
 		label.TextSize = 13
 		label.Font = Enum.Font.GothamBold
 		label.TextXAlignment = Enum.TextXAlignment.Left
 		label.Parent = page
-		return label
 	end
 
-	function tab:CreateButton(text, callback)
-		local btn = Instance.new("TextButton")
-		btn.Size = UDim2.new(1, 0, 0, 40)
-		btn.BackgroundColor3 = self.UI.Theme.Element
-		btn.Text = text
-		btn.TextColor3 = self.UI.Theme.Text
-		btn.TextSize = 14
-		btn.Font = Enum.Font.Gotham
-		btn.Parent = page
-		corner(btn, 9)
-		stroke(btn, self.UI.Theme.Stroke)
+	function tab:Button(text, callback)
+		local b = Instance.new("TextButton")
+		b.Size = UDim2.new(1, 0, 0, 42)
+		b.BackgroundColor3 = self.UI.Theme.Element
+		b.Text = text
+		b.TextColor3 = self.UI.Theme.Text
+		b.TextSize = 14
+		b.Font = Enum.Font.GothamBold
+		b.Parent = page
+		corner(b, 11)
+		stroke(b, self.UI.Theme.Stroke)
 
-		btn.MouseButton1Click:Connect(function()
+		b.MouseEnter:Connect(function()
+			tween(b, {BackgroundColor3 = self.UI.Theme.Accent}, 0.15)
+		end)
+
+		b.MouseLeave:Connect(function()
+			tween(b, {BackgroundColor3 = self.UI.Theme.Element}, 0.15)
+		end)
+
+		b.MouseButton1Click:Connect(function()
 			if callback then callback() end
 		end)
 
-		return btn
+		return b
 	end
 
-	function tab:CreateToggle(text, default, callback)
+	function tab:Toggle(text, default, callback)
 		local state = default or false
 
-		local btn = self:CreateButton(text .. ": " .. tostring(state), function()
+		local b = self:Button(text .. "  [" .. (state and "ON" or "OFF") .. "]", function()
 			state = not state
-			btn.Text = text .. ": " .. tostring(state)
-
-			if state then
-				btn.BackgroundColor3 = self.UI.Theme.Accent
-			else
-				btn.BackgroundColor3 = self.UI.Theme.Element
-			end
-
+			b.Text = text .. "  [" .. (state and "ON" or "OFF") .. "]"
 			if callback then callback(state) end
 		end)
 
-		return btn
+		return b
 	end
 
-	function tab:CreateSlider(text, min, max, default, callback)
+	function tab:Slider(text, min, max, default, callback)
 		local value = default or min
 
-		local btn = self:CreateButton(text .. ": " .. tostring(value), function()
+		local b = self:Button(text .. ": " .. value, function()
 			value += 1
-			if value > max then
-				value = min
-			end
-
-			btn.Text = text .. ": " .. tostring(value)
-
+			if value > max then value = min end
+			b.Text = text .. ": " .. value
 			if callback then callback(value) end
 		end)
 
-		return btn
+		return b
 	end
 
-	function tab:CreateTextBox(text, placeholder, callback)
+	function tab:Dropdown(text, options, default, callback)
+		local index = 1
+
+		for i, v in ipairs(options) do
+			if v == default then index = i end
+		end
+
+		local b = self:Button(text .. ": " .. tostring(options[index]), function()
+			index += 1
+			if index > #options then index = 1 end
+
+			local selected = options[index]
+			b.Text = text .. ": " .. tostring(selected)
+
+			if callback then callback(selected) end
+		end)
+
+		return b
+	end
+
+	function tab:Textbox(text, placeholder, callback)
 		local box = Instance.new("TextBox")
-		box.Size = UDim2.new(1, 0, 0, 40)
+		box.Size = UDim2.new(1, 0, 0, 42)
 		box.BackgroundColor3 = self.UI.Theme.Element
-		box.PlaceholderText = placeholder or text
 		box.Text = ""
+		box.PlaceholderText = placeholder or text
 		box.TextColor3 = self.UI.Theme.Text
-		box.PlaceholderColor3 = self.UI.Theme.MutedText
+		box.PlaceholderColor3 = self.UI.Theme.Muted
 		box.TextSize = 14
 		box.Font = Enum.Font.Gotham
 		box.Parent = page
-		corner(box, 9)
+		corner(box, 11)
 		stroke(box, self.UI.Theme.Stroke)
 
 		box.FocusLost:Connect(function()
@@ -462,66 +492,141 @@ function PrivateUI:CreateTab(name)
 		return box
 	end
 
-	button.MouseButton1Click:Connect(function()
+	btn.MouseButton1Click:Connect(function()
 		tab:Show()
 	end)
 
-	tab.Button = button
+	tab.Button = btn
 	tab.Page = page
 
 	table.insert(self.Tabs, tab)
 
-	if not self.CurrentTab then
+	if #self.Tabs == 1 then
 		tab:Show()
 	end
+
+	self:ApplySidebarMode()
 
 	return tab
 end
 
-function PrivateUI:SetTheme(themeName)
-	local theme = PrivateUI.Themes[themeName]
-	if not theme then return end
+function DyX:CreateConfigTab()
+	local Config = self:CreateTab("Config", "⚙")
 
-	self.ThemeName = themeName
-	self.Theme = theme
+	Config:Section("Interface")
 
-	self.Root.BackgroundColor3 = theme.Background
-	self.Topbar.BackgroundColor3 = theme.Panel
-	self.Sidebar.BackgroundColor3 = theme.Panel
-	self.Content.BackgroundColor3 = theme.Panel
-	self.TitleLabel.TextColor3 = theme.Text
-	self.CloseButton.BackgroundColor3 = theme.Element
-	self.CloseButton.TextColor3 = theme.Text
+	Config:Dropdown("Tema", (function()
+		local list = {}
+		for name in pairs(DyX.Themes) do table.insert(list, name) end
+		table.sort(list)
+		return list
+	end)(), self.Settings.Theme, function(value)
+		self:SetTheme(value)
+	end)
 
-	if self.Float then
-		self.Float.BackgroundColor3 = theme.Accent
-	end
-end
+	Config:Dropdown("Sidebar", {"IconText", "Icon", "Text"}, self.Settings.SidebarMode, function(value)
+		self.Settings.SidebarMode = value
+		self:ApplySidebarMode()
+		self:SaveConfig()
+	end)
 
-function PrivateUI:Notify(text)
-	local note = Instance.new("TextLabel")
-	note.Size = UDim2.new(0, 280, 0, 42)
-	note.Position = UDim2.new(1, -300, 1, -70)
-	note.BackgroundColor3 = self.Theme.Panel
-	note.Text = text
-	note.TextColor3 = self.Theme.Text
-	note.TextSize = 14
-	note.Font = Enum.Font.Gotham
-	note.Parent = self.Gui
-	corner(note, 10)
-	stroke(note, self.Theme.Stroke)
+	Config:Slider("Opacidade Fundo", 0, 90, math.floor(self.Settings.BackgroundOpacity * 100), function(value)
+		self:SetOpacity(value / 100)
+	end)
 
-	task.delay(2.5, function()
-		if note then
-			note:Destroy()
-		end
+	Config:Slider("Timer Notify", 1, 15, self.Settings.NotifyTime, function(value)
+		self.Settings.NotifyTime = value
+		self:SaveConfig()
+	end)
+
+	Config:Section("Sistema")
+
+	Config:Toggle("AutoSave", self.Settings.AutoSave, function(value)
+		self.Settings.AutoSave = value
+		self:SaveConfig()
+	end)
+
+	Config:Toggle("AutoExecute", self.Settings.AutoExecute, function(value)
+		self.Settings.AutoExecute = value
+		self:SaveConfig()
+		self:Notify("AutoExecute: " .. tostring(value))
+	end)
+
+	Config:Button("Recarregar Interface", function()
+		self:Reload()
+	end)
+
+	Config:Button("Fechar UI", function()
+		self:Toggle()
+	end)
+
+	Config:Button("Destruir UI", function()
+		self:Destroy()
 	end)
 end
 
-function PrivateUI:Destroy()
+function DyX:Notify(text, duration)
+	duration = duration or self.Settings.NotifyTime or 5
+
+	local n = Instance.new("Frame")
+	n.Size = UDim2.new(0, 320, 0, 58)
+	n.Position = UDim2.new(1, -340, 1, -80)
+	n.BackgroundColor3 = self.Theme.Panel
+	n.Parent = self.Gui
+	corner(n, 12)
+	stroke(n, self.Theme.Stroke)
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(1, -52, 1, -8)
+	label.Position = UDim2.new(0, 12, 0, 4)
+	label.BackgroundTransparency = 1
+	label.Text = text
+	label.TextColor3 = self.Theme.Text
+	label.TextSize = 13
+	label.Font = Enum.Font.GothamBold
+	label.TextXAlignment = Enum.TextXAlignment.Left
+	label.TextWrapped = true
+	label.Parent = n
+
+	local x = Instance.new("TextButton")
+	x.Size = UDim2.new(0, 28, 0, 28)
+	x.Position = UDim2.new(1, -36, 0, 8)
+	x.BackgroundColor3 = self.Theme.Element
+	x.Text = "×"
+	x.TextColor3 = self.Theme.Text
+	x.TextSize = 18
+	x.Font = Enum.Font.GothamBold
+	x.Parent = n
+	corner(x, 8)
+
+	local bar = Instance.new("Frame")
+	bar.Size = UDim2.new(1, 0, 0, 3)
+	bar.Position = UDim2.new(0, 0, 1, -3)
+	bar.BackgroundColor3 = self.Theme.Accent
+	bar.Parent = n
+
+	local closed = false
+
+	local function close()
+		if closed then return end
+		closed = true
+		tween(n, {Position = UDim2.new(1, 20, 1, -80)}, 0.2)
+		task.delay(0.22, function()
+			if n then n:Destroy() end
+		end)
+	end
+
+	x.MouseButton1Click:Connect(close)
+
+	tween(bar, {Size = UDim2.new(0, 0, 0, 3)}, duration)
+
+	task.delay(duration, close)
+end
+
+function DyX:Destroy()
 	if self.Gui then
 		self.Gui:Destroy()
 	end
 end
 
-return PrivateUI
+return DyX
