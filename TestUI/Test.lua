@@ -1,51 +1,39 @@
-local MainRaw = "https://raw.githubusercontent.com/GlitchBruxo/DyX/refs/heads/main/UI/MainUI.%20lua"
+local MainUrl = "https://raw.githubusercontent.com/GlitchBruxo/DyX/refs/heads/main/UI/MainUI.%20lua"
 
-local PrivateUI = loadstring(game:HttpGet(MainRaw))()
+local DyX = loadstring(game:HttpGet(MainUrl))()
 
-local UI = PrivateUI.new({
-	Title = "DyX UI Test",
+local UI = DyX.new({
+	Title = "DyX Test Hub",
 	Theme = "AmoledGreen",
-	ToggleKey = Enum.KeyCode.RightShift
+	KeyTier = "Free",
+	ToggleKey = Enum.KeyCode.RightShift,
+	ScriptUrl = "https://raw.githubusercontent.com/GlitchBruxo/DyX/refs/heads/main/TestUI/Test.lua"
 })
 
-local Home = UI:CreateTab("Home")
-local Player = UI:CreateTab("Player")
-local Config = UI:CreateTab("Config")
+local Home = UI:CreateTab("Home", "⌂")
+local Player = UI:CreateTab("Player", "👤")
+local World = UI:CreateTab("World", "🌎")
 
-Home:CreateSection("Teste Geral")
-
-Home:CreateButton("Testar botão", function()
-	print("Botão OK")
-	UI:Notify("Botão funcionando!")
+Home:Section("Teste")
+Home:Button("Testar Notify", function()
+	UI:Notify("Notify funcionando.")
 end)
 
-Player:CreateSection("Player Test")
-
-Player:CreateToggle("Toggle Teste", false, function(value)
-	print("Toggle:", value)
-	UI:Notify("Toggle: " .. tostring(value))
+Player:Section("Componentes")
+Player:Toggle("Toggle Teste", false, function(v)
+	print("Toggle:", v)
 end)
 
-Player:CreateSlider("Slider Teste", 1, 10, 5, function(value)
-	print("Slider:", value)
+Player:Slider("Slider Teste", 1, 10, 5, function(v)
+	print("Slider:", v)
 end)
 
-Player:CreateTextBox("Texto Teste", "Digite algo...", function(text)
+Player:Textbox("Texto", "Digite algo...", function(text)
 	print("Texto:", text)
-	UI:Notify("Texto: " .. text)
 end)
 
-Config:CreateSection("Temas")
-
-for themeName in pairs(PrivateUI.Themes) do
-	Config:CreateButton(themeName, function()
-		UI:SetTheme(themeName)
-		UI:Notify("Tema: " .. themeName)
-	end)
-end
-
-Home:CreateButton("Destruir UI", function()
-	UI:Destroy()
+World:Dropdown("Modo", {"Normal", "Teste", "Debug"}, "Normal", function(v)
+	print("Modo:", v)
 end)
 
-UI:Notify("DyX UI carregada!")
+UI:Notify("DyX UI carregada.")
