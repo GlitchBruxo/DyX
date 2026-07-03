@@ -1,4 +1,4 @@
-local MainUrl = "https://raw.githubusercontent.com/GlitchBruxo/DyX/refs/heads/main/UI/MainUI.%20lua"
+local MainUrl = "https://raw.githubusercontent.com/GlitchBruxo/DyX/refs/heads/main/UI/MainUI.lua"
 
 local DyX = loadstring(game:HttpGet(MainUrl))()
 
